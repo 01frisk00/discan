@@ -43,7 +43,9 @@ exports.DiModule = (diModule) => {
     return (target) => {
         let client = new Discord.Client();
         client.login(diModule.token).then(() => {
-            let CanAddName = [{ ref: client, name: "Client" }];
+            let CanAddName = [
+                { ref: client, name: "Client" }
+            ];
             let providers = [];
             let commands = [];
             diModule.providers.forEach(provider => {
@@ -64,6 +66,11 @@ exports.DiModule = (diModule) => {
                 providers.push(providerObj);
                 CanAddName.push({ ref: providerObj, name: provider.name });
             });
+            let cmdNames = [];
+            diModule.commands.forEach(command => {
+                cmdNames.push(command.info.name);
+            });
+            CanAddName.push({ name: "Commands", ref: cmdNames });
             diModule.commands.forEach(command => {
                 let Parameters = getClassConstructorParameters(command.comp);
                 let addedParameters = [];

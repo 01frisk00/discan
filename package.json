@@ -1,12 +1,12 @@
 {
   "name": "discan",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["TypeScript", "Discord", "Bots", "Easy"],
   "author": "",
   "license": "ISC",
   "dependencies": {

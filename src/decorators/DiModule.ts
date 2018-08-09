@@ -1,6 +1,7 @@
 import * as Discord from 'discord.js';
 import 'reflect-metadata';
 
+import { CanAdd } from '../Interfaces/index';
 import { Type } from './type';
 
 export interface Command {
@@ -41,19 +42,6 @@ export class CommandsManager {
     }
 }
 
-export interface OnReady {
-    diOnReady();
-}
-
-export interface OnMessage {
-    diOnMessage(message: Discord.Message);
-}
-
-interface CanAdd {
-    ref: any,
-    name: string
-}
-
 function getClassConstructorParameters(t: object): string[] {
     let params: string[] = Reflect.getMetadata('design:paramtypes', t);
 
@@ -72,12 +60,18 @@ function getClassConstructorParameters(t: object): string[] {
     return params;
 }
 
+export interface Commands {
+    all: string[];
+}
+
 export const DiModule = (diModule: DiModule) => {
     return (target: Type<object>) => {
         let client: Discord.Client = new Discord.Client();
 
         client.login(diModule.token).then(() => {
-            let CanAddName: CanAdd[] = [{ ref: client, name: "Client" }];
+            let CanAddName: CanAdd[] = [
+                { ref: client, name: "Client" }
+            ];
 
             let providers: any[] = [];
             let commands: any[] = [];
@@ -104,6 +98,14 @@ export const DiModule = (diModule: DiModule) => {
                 CanAddName.push({ ref: providerObj, name: provider.name });
             });
 
+            let cmdNames: string[] = [];
+
+            diModule.commands.forEach(command => {
+                cmdNames.push(command.info.name);
+            });
+
+            CanAddName.push({ name: "Commands", ref: cmdNames })
+
             diModule.commands.forEach(command => {
                 let Parameters: string[] = getClassConstructorParameters(command.comp);
                 let addedParameters: any[] = [];
@@ -123,7 +125,7 @@ export const DiModule = (diModule: DiModule) => {
                 let commandObj = new (Function.prototype.bind.apply(command.comp, [null].concat(addedParameters)));
 
                 commands.push(commandObj);
-                CanAddName.push({ ref: commandObj, name: command.comp.name })
+                CanAddName.push({ ref: commandObj, name: command.comp.name });
             });
 
             if (diModule.options.useCommandsManager == true) {

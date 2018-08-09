@@ -1,1 +1,2 @@
-export * from './decorators/index';
+export * from './decorators';
+export * from './Interfaces';
